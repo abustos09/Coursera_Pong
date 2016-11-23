@@ -22,6 +22,12 @@ scoreleft = 0
 scoreright = 0
 paddle_acc = 2
 
+image = simplegui.load_image("http://i.imgur.com/9Mz4iOS.jpg")
+img_src_width = 1920
+img_src_height = 1080
+
+#ball_color = "white"
+
 # initialize ball_pos and ball_vel for new bal in middle of table
 # if direction is RIGHT, the ball's velocity is upper right, else upper left
 def spawn_ball(direction):
@@ -38,21 +44,28 @@ def spawn_ball(direction):
     
 # define event handlers
 def new_game():
-    global paddle_acc, paddle1_pos, paddle2_pos, paddle1_vel, paddle2_vel, scoreleft, scoreright 
+    global ball_color, paddle_acc, paddle1_pos, paddle2_pos, paddle1_vel, \
+        paddle2_vel, scoreleft, scoreright 
     scoreleft = 0
     scoreright = 0
     paddle_acc = 2
     paddle1_vel = 0
     paddle2_vel = 0
+    ball_color = "white"
     paddle1_pos = HEIGHT / 2
     paddle2_pos = HEIGHT / 2
     direction = random.choice([LEFT, RIGHT])
     spawn_ball(direction)
 
 def draw(canvas):
-    global paddle_acc, scoreleft, scoreright, paddle1_pos, paddle2_pos, ball_pos, ball_vel
+    global ball_color, paddle_acc, scoreleft, scoreright
+    global paddle1_pos, paddle2_pos, ball_pos, ball_vel
+    
+    canvas.draw_image(image, [img_src_width/2, img_src_height/2], [img_src_width, img_src_height],\
+                      [WIDTH/2, HEIGHT/2], [WIDTH, HEIGHT])
  
     # draw mid line and gutters
+    #canvas.draw_image(image, (867/2, 488/2), (867, 488), (WIDTH-10 /2, HEIGHT-10/2), (WIDTH-10, HEIGHT-10)
     canvas.draw_line([WIDTH / 2, 0],[WIDTH / 2, HEIGHT], 1, "White")
     canvas.draw_line([PAD_WIDTH, 0],[PAD_WIDTH, HEIGHT], 1, "White")
     canvas.draw_line([WIDTH - PAD_WIDTH, 0],[WIDTH - PAD_WIDTH, HEIGHT], 1, "White")
@@ -62,7 +75,7 @@ def draw(canvas):
     ball_pos[1] += ball_vel[1]
             
     # draw ball
-    canvas.draw_circle(ball_pos, BALL_RADIUS, 1, "white", "white")
+    canvas.draw_circle(ball_pos, BALL_RADIUS, 1, ball_color, ball_color)
     
     # update paddle's vertical position, keep paddle on the screen
     if paddle1_pos <= HALF_PAD_HEIGHT:
@@ -84,13 +97,19 @@ def draw(canvas):
     canvas.draw_line([WIDTH - 1, paddle2_pos - HALF_PAD_HEIGHT ],\
                      [WIDTH - 1, paddle2_pos + HALF_PAD_HEIGHT], PAD_WIDTH, "white")
     
-    # determine whether paddle and ball collide 
-    if (ball_pos[0] - BALL_RADIUS <= HALF_PAD_WIDTH) and paddle1_pos - HALF_PAD_HEIGHT <= ball_pos[1] <= paddle1_pos + HALF_PAD_HEIGHT:
+    # determine whether paddle and ball collide
+    colors = ["Coral","Aquamarine","Deep Sky Blue", "blue", "white", "yellow", "red",\
+         "green", "pink", "cyan", "Blue Violet"] 
+    if (ball_pos[0] - BALL_RADIUS <= HALF_PAD_WIDTH) and \
+        paddle1_pos - HALF_PAD_HEIGHT <= ball_pos[1] <= paddle1_pos + HALF_PAD_HEIGHT:
         ball_vel[0] =  - ball_vel[0] * 1.1
         paddle_acc = paddle_acc * 1.1
-    elif (ball_pos[0] + BALL_RADIUS) >= WIDTH - HALF_PAD_WIDTH and paddle2_pos - HALF_PAD_HEIGHT <= ball_pos[1] <= paddle2_pos + HALF_PAD_HEIGHT:
+        ball_color = random.choice(colors)
+    elif (ball_pos[0] + BALL_RADIUS) >= WIDTH - HALF_PAD_WIDTH and \
+        paddle2_pos - HALF_PAD_HEIGHT <= ball_pos[1] <= paddle2_pos + HALF_PAD_HEIGHT:
         ball_vel[0] =  - ball_vel[0] * 1.1
         paddle_acc = paddle_acc * 1.1
+        ball_color = random.choice(colors)
     
     # determine whether balls collide with gutter
     if (ball_pos[0] <= PAD_WIDTH):
@@ -152,3 +171,12 @@ frame.add_button("New Game", restart, 200)
 # start frame
 new_game()
 frame.start()
+"""
+add a pause button
+
+interactive play button 
+
+paddles with increassing speed insteadof constant 10%
+
+"""
+
